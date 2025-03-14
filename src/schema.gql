@@ -1,0 +1,66 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthResponse {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type AuthRegisterResponse {
+  userConfirmed: Boolean!
+  message: String!
+}
+
+type CodeDeliveryDetails {
+  AttributeName: String!
+  DeliveryMedium: String!
+  Destination: String!
+}
+
+type ForgotPaswordResponse {
+  CodeDeliveryDetails: CodeDeliveryDetails!
+}
+
+type StandardResponseAuth {
+  status: String!
+}
+
+type Query {
+  hello: String!
+}
+
+type Mutation {
+  signup(signupInput: RegisterInput!): AuthRegisterResponse!
+  login(loginUserInput: LoginInput!): AuthResponse!
+  changePassword(changePasswordInput: ChangePasswordInput!): StandardResponseAuth!
+  forgotPassword(forgotPasswordInput: ForgotPasswordInput!): ForgotPaswordResponse!
+  confirmPassword(confirmPasswordInput: ConfirmPasswordInput!): StandardResponseAuth!
+}
+
+input RegisterInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input ChangePasswordInput {
+  email: String!
+  currentPassword: String!
+  newPassword: String!
+}
+
+input ForgotPasswordInput {
+  email: String!
+}
+
+input ConfirmPasswordInput {
+  email: String!
+  confirmationCode: String!
+  newPassword: String!
+}
