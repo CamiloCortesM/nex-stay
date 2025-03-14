@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 async function main() {
   await prisma.room.createMany({
     data: [
-      // Habitaciones Sencillas
+      // Single Rooms
       ...Array(5)
         .fill(null)
         .map(() => ({
@@ -23,7 +23,7 @@ async function main() {
           maxCapacity: 1,
         })),
 
-      // Habitaciones Dobles
+      // Double Rooms
       ...Array(8)
         .fill(null)
         .map(() => ({
@@ -41,7 +41,7 @@ async function main() {
           maxCapacity: 2,
         })),
 
-      // Habitaciones Presidenciales
+      // Presidential Rooms
       ...Array(3)
         .fill(null)
         .map(() => ({
