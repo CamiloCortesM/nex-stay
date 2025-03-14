@@ -7,6 +7,9 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { AuthModule } from './auth/auth.module';
 import { AppResolver } from './app.resolver';
 import { PrismaModule } from './prisma/prisma.module';
+import { ReservationsModule } from './reservations/reservations.module';
+import { RoomsModule } from './rooms/rooms.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -18,6 +21,9 @@ import { PrismaModule } from './prisma/prisma.module';
     }),
     AuthModule,
     PrismaModule,
+    ReservationsModule,
+    RoomsModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [AppResolver],

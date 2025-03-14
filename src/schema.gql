@@ -26,8 +26,80 @@ type StandardResponseAuth {
   status: String!
 }
 
+type Room {
+  id: Int!
+  type: String!
+  view: String!
+  basePrice: Int!
+  maxCapacity: Int!
+  isDeleted: Boolean!
+  createdAt: DateTime!
+  reservations: [Reservation!]
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Reservation {
+  id: ID!
+  checkIn: DateTime!
+  checkOut: DateTime!
+  people: Float!
+  roomId: Float!
+  userId: String!
+  totalPrice: Float!
+  status: String!
+  allInclusive: Boolean!
+  createdAt: DateTime!
+  room: Room!
+
+  """Number of days in the reservation"""
+  daysCount: Float!
+
+  """Number of nights in the reservation"""
+  nightsCount: Float!
+
+  """Base value applied to the reservation"""
+  baseValue: Float!
+
+  """Total weekend increment applied"""
+  weekendIncrement: Float!
+
+  """Total discount for days"""
+  daysDiscount: Float!
+
+  """Total for all inclusive"""
+  allInclusiveTotal: Float!
+}
+
+type PaginatedReservations {
+  """Past reservations"""
+  past: [Reservation!]!
+
+  """Current reservations"""
+  current: [Reservation!]!
+
+  """Future reservations"""
+  future: [Reservation!]!
+
+  """Total count of past reservations"""
+  totalPast: Float!
+
+  """Total count of current reservations"""
+  totalCurrent: Float!
+
+  """Total count of future reservations"""
+  totalFuture: Float!
+}
+
 type Query {
   hello: String!
+  reservation(id: String!): Reservation!
+  reservations(offset: Int = 0, limit: Int = 10): PaginatedReservations!
+  rooms: [Room!]!
+  room(id: Int!): Room!
 }
 
 type Mutation {
@@ -36,6 +108,11 @@ type Mutation {
   changePassword(changePasswordInput: ChangePasswordInput!): StandardResponseAuth!
   forgotPassword(forgotPasswordInput: ForgotPasswordInput!): ForgotPaswordResponse!
   confirmPassword(confirmPasswordInput: ConfirmPasswordInput!): StandardResponseAuth!
+  createReservation(createReservationInput: CreateReservationInput!): Reservation!
+  cancelReservation(id: String!): Reservation!
+  createRoom(createRoomInput: CreateRoomInput!): Room!
+  updateRoom(updateRoomInput: UpdateRoomInput!): Room!
+  removeRoom(id: Int!): Room!
 }
 
 input RegisterInput {
@@ -63,4 +140,30 @@ input ConfirmPasswordInput {
   email: String!
   confirmationCode: String!
   newPassword: String!
+}
+
+input CreateReservationInput {
+  checkIn: DateTime!
+  checkOut: DateTime!
+  people: Float!
+  roomType: RoomType!
+  allInclusive: Boolean!
+}
+
+"""The available room types"""
+enum RoomType {
+  SENCILLA
+  DOBLE
+  PRESIDENCIAL
+}
+
+input CreateRoomInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateRoomInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }
