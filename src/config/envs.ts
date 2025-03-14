@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import * as joi from 'joi';
-import { EnvVars } from './interfaces';
+import { EnvVars } from './envs.interfaces';
 
 const envsSchema = joi
   .object<EnvVars>({
