@@ -11,7 +11,7 @@ export const GetAuth = createParamDecorator(
   (data: keyof AuthResponse | undefined, ctx: ExecutionContext) => {
     const gqlCtx = GqlExecutionContext.create(ctx);
     const gqlContext = gqlCtx.getContext<GqlContext>();
-    const user = gqlContext.user as AuthResponse;
+    const user = gqlContext.req.user as AuthResponse;
 
     if (!user)
       throw new InternalServerErrorException('User not found in request');
