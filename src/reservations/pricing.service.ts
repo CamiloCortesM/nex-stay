@@ -1,22 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-interface PricingParams {
-  checkIn: Date;
-  checkOut: Date;
-  people: number;
-  basePrice: number;
-  allInclusive: boolean;
-}
-
-interface PricingResult {
-  totalPrice: number;
-  totalNights: number;
-  weekendSurcharge?: number;
-  discount?: number;
-  allInclusiveCost?: number;
-  basePrice?: number;
-}
-
+import { PricingParams, PricingResult } from './interfaces/pricing.interface';
+/**
+ * Service responsible for reservation pricing calculations
+ * including nights, surcharges, discounts and additional services
+ */
 @Injectable()
 export class PricingService {
   calculateTotalPrice(params: PricingParams): PricingResult {
@@ -44,6 +32,10 @@ export class PricingService {
     };
   }
 
+  /**
+   * Calculates the number of nights between check-in and check-out dates
+   * Uses UTC to avoid issues with daylight saving time and time zones
+   */
   calculateNightOrDaysCount(checkIn: Date, checkOut: Date): number {
     const utcCheckIn = Date.UTC(
       checkIn.getFullYear(),
@@ -61,6 +53,10 @@ export class PricingService {
     return Math.floor((utcCheckOut - utcCheckIn) / millisecondsPerDay);
   }
 
+  /**
+   * Identifies how many nights fall on weekends (Friday and Saturday)
+   * to apply corresponding surcharges
+   */
   countWeekendNights(start: Date, nights: number): number {
     let weekendNights = 0;
 
@@ -83,6 +79,10 @@ export class PricingService {
     return weekendNights;
   }
 
+  /**
+   * Returns the discount per night based on the length of stay
+   * Longer stays receive greater discounts
+   */
   calculateDiscount(nights: number): number {
     if (nights >= 10) return 30000;
     if (nights >= 7) return 20000;
@@ -90,6 +90,10 @@ export class PricingService {
     return 0;
   }
 
+  /**
+   * Calculates the additional cost of all-inclusive service based on
+   * the number of people and length of stay
+   */
   calculateAllInclusiveCost(
     isAllInclusive: boolean,
     peopleCount: number,

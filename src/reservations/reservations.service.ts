@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReservationInput } from './dto/inputs/create-reservation.input';
-import { PricingService } from './pricing.service';
-import { Reservation } from './model/reservation.model';
+import { Reservation } from './models/reservation.model';
 import { PaginationArgs } from 'src/common/dto/args/pagination.args';
-import { PaginatedReservations } from './model/paginated-reservations.model';
+import { PaginatedReservations } from './types/paginated-reservations.type';
+import { PricingService } from './pricing.service';
 
 @Injectable()
 export class ReservationsService {
@@ -56,6 +56,18 @@ export class ReservationsService {
     });
   }
 
+  /**
+   * Finds an available room based on the reservation input criteria
+   *
+   * @param input - The CreateReservationInput containing room requirements
+   * @returns A Promise resolving to an available room or null if none is found
+   *
+   * @description
+   * This method checks for room availability by:
+   * 1. Finding all conflicting reservations for the requested dates
+   * 2. Searching for a room of the requested type that isn't booked
+   * 3. Ensuring the room can accommodate the number of people
+   */
   private async findAvailableRoom(input: CreateReservationInput) {
     const conflictingReservations = await this.prisma.reservation.findMany({
       where: {
@@ -76,6 +88,14 @@ export class ReservationsService {
     });
   }
 
+  /**
+   * Cancels an existing reservation by changing its status
+   *
+   * @param id - The unique identifier of the reservation to cancel
+   * @returns A Promise resolving to the updated reservation with CANCELLED status
+   *
+   * @throws {NotFoundException} If the reservation with the given ID doesn't exist
+   */
   async cancelReservation(id: string) {
     return this.prisma.reservation.update({
       where: { id },
@@ -84,6 +104,14 @@ export class ReservationsService {
     });
   }
 
+  /**
+   * Retrieves a single reservation by its ID
+   *
+   * @param id - The unique identifier of the reservation
+   * @returns A Promise resolving to the reservation with the associated room
+   *
+   * @throws {NotFoundException} If no reservation with the given ID exists
+   */
   async findOne(id: string): Promise<Reservation> {
     const reservation = await this.prisma.reservation.findUnique({
       where: { id },

@@ -6,20 +6,25 @@ import {
   Parent,
   Query,
 } from '@nestjs/graphql';
-import { ReservationsService } from './reservations.service';
+
 import { CreateReservationInput } from './dto/inputs/create-reservation.input';
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from 'src/auth/interfaces/user.interface';
-import { Reservation } from './model/reservation.model';
+import { Reservation } from './models/reservation.model';
 import { PaginationArgs } from 'src/common/dto/args/pagination.args';
-import { PaginatedReservations } from './model/paginated-reservations.model';
+import { PaginatedReservations } from './types/paginated-reservations.type';
+import { ReservationsService } from './reservations.service';
 
 @Resolver(() => Reservation)
 export class ReservationsResolver {
   constructor(private readonly reservationsService: ReservationsService) {}
 
+  /**
+   * Retrieves a specific reservation by ID
+   * @param id - Unique reservation identifier
+   */
   @Query(() => Reservation, { name: 'reservation' })
   @UseGuards(JwtAuthGuard)
   async getReservation(
@@ -28,6 +33,10 @@ export class ReservationsResolver {
     return this.reservationsService.findOne(id);
   }
 
+  /**
+   * Lists reservations with pagination support
+   * @param paginationArgs - Pagination parameters (limit, offset)
+   */
   @Query(() => PaginatedReservations, { name: 'reservations' })
   @UseGuards(JwtAuthGuard)
   async getPaginatedReservations(
@@ -36,6 +45,11 @@ export class ReservationsResolver {
     return this.reservationsService.findPaginatedReservations(paginationArgs);
   }
 
+  /**
+   * Creates a new reservation for the authenticated user
+   * @param user - Current authenticated user
+   * @param createReservationInput - Reservation details
+   */
   @Mutation(() => Reservation)
   @UseGuards(JwtAuthGuard)
   async createReservation(
@@ -49,6 +63,10 @@ export class ReservationsResolver {
     );
   }
 
+  /**
+   * Cancels an existing reservation
+   * @param id - Reservation to cancel
+   */
   @Mutation(() => Reservation)
   @UseGuards(JwtAuthGuard)
   async cancelReservation(
@@ -57,6 +75,9 @@ export class ReservationsResolver {
     return this.reservationsService.cancelReservation(id);
   }
 
+  /**
+   * Calculates total days in stay (inclusive of check-in and check-out days)
+   */
   @ResolveField(() => Number, {
     description: 'Number of days in the reservation',
     name: 'daysCount',
@@ -68,6 +89,9 @@ export class ReservationsResolver {
     );
   }
 
+  /**
+   * Calculates total nights in stay (excludes check-out day)
+   */
   @ResolveField(() => Number, {
     description: 'Number of nights in the reservation',
     name: 'nightsCount',
@@ -79,6 +103,9 @@ export class ReservationsResolver {
     );
   }
 
+  /**
+   * Returns the base room price from the associated room
+   */
   @ResolveField(() => Number, {
     description: 'Base value applied to the reservation',
     name: 'baseValue',
@@ -87,6 +114,9 @@ export class ReservationsResolver {
     return reservation.room.basePrice;
   }
 
+  /**
+   * Calculates weekend pricing surcharge applied to the reservation
+   */
   @ResolveField(() => Number, {
     description: 'Total weekend increment applied',
     name: 'weekendIncrement',
@@ -95,6 +125,9 @@ export class ReservationsResolver {
     return this.reservationsService.calculateWeekendIncrement(reservation);
   }
 
+  /**
+   * Calculates long-stay discount based on reservation duration
+   */
   @ResolveField(() => Number, {
     description: 'Total discount for days',
     name: 'daysDiscount',
@@ -106,6 +139,9 @@ export class ReservationsResolver {
     );
   }
 
+  /**
+   * Calculates all-inclusive package cost based on guests and duration
+   */
   @ResolveField(() => Number, {
     description: 'Total for all inclusive',
     name: 'allInclusiveTotal',
