@@ -1,10 +1,10 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
 import { RoomsService } from './rooms.service';
-import { Room } from './model/room.model';
+import { Room } from './models/room.model';
 import { AvailableRoomsArgs } from './dto/args/available-rooms.args';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { PagedAvailableRoomResult } from './model/paged-available-room-result.model';
+import { PagedAvailableRoomResult } from './types/paged-available-room-result.type';
 import { PaginationArgs } from '../common/dto/args/pagination.args';
 
 @Resolver(() => Room)
