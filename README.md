@@ -59,6 +59,7 @@ docker-compose up -d --build
 ```
 
 El sistema iniciará automáticamente:
+
 - Base de datos PostgreSQL
 - Aplicación NestJS en modo desarrollo (con hot-reload activado)
 - Migraciones y seed de la base de datos
@@ -72,6 +73,7 @@ http://localhost:3000/graphql
 ```
 
 Este entorno te permite:
+
 - Explorar el esquema GraphQL
 - Ejecutar consultas y mutaciones
 - Ver la documentación de la API
@@ -107,6 +109,21 @@ docker-compose logs -f nex-stay
 
 # Ver logs de la base de datos
 docker-compose logs -f database
+```
+
+### 6. Ejecutar Tests
+
+Para ejecutar los tests del proyecto:
+
+```bash
+# Ejecutar todos los tests
+npm run test
+
+# Ejecutar tests con coverage
+npm run test:cov
+
+# Ejecutar tests en modo watch
+npm run test:watch
 ```
 
 ## 🛠 Tecnologías Utilizadas (Actualizado)
@@ -281,4 +298,17 @@ docker-compose restart nex-stay
 docker-compose logs -f
 ```
 
+### 6. Ejecutar Tests
 
+Para ejecutar los tests del proyecto:
+
+```bash
+# Ejecutar todos los tests
+npm run test
+
+# Ejecutar tests con coverage
+npm run test:cov
+
+# Ejecutar tests en modo watch
+npm run test:watch
+```
