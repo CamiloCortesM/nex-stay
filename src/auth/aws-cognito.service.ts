@@ -16,7 +16,7 @@ import { AuthResponse } from './types/auth.type';
 import { ForgotPaswordResponse } from './types/forgot-password.type';
 import { AuthRegisterResponse } from './types/auth-register.type';
 import { StandardResponseAuth } from './types/standar-response-auth';
-import { envs } from 'src/config/envs';
+import { envs } from '../config/envs';
 
 /**
  * Service responsible for AWS Cognito integration
