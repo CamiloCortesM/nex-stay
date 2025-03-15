@@ -1,24 +1,17 @@
-import { join } from 'path';
-
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { ApolloDriverConfig } from '@nestjs/apollo';
+
+import { graphqlConfig } from './config/graphql.config';
 import { AuthModule } from './auth/auth.module';
-import { AppResolver } from './app.resolver';
+import { CommonModule } from './common/common.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { RoomsModule } from './rooms/rooms.module';
-import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      playground: false,
-      plugins: [ApolloServerPluginLandingPageLocalDefault()],
-    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>(graphqlConfig()),
     AuthModule,
     PrismaModule,
     ReservationsModule,
@@ -26,6 +19,5 @@ import { CommonModule } from './common/common.module';
     CommonModule,
   ],
   controllers: [],
-  providers: [AppResolver],
 })
 export class AppModule {}

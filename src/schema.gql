@@ -128,7 +128,6 @@ type PagedAvailableRoomResult {
 }
 
 type Query {
-  hello: String!
   reservation(id: String!): Reservation!
   reservations(offset: Int = 0, limit: Int = 10): PaginatedReservations!
 
