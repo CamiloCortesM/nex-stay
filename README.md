@@ -24,50 +24,89 @@ El check-in suele realizarse en la tarde, generalmente después de las 4:00 p.m.
 
 ### Prerrequisitos
 
-- Node.js v18+
-- npm v9+
 - Docker y Docker Compose
-- Cuenta AWS con Cognito configurado
+- Variables de entorno AWS Cognito configuradas
 
 ### 1. Configuración Inicial
 
 ```bash
 git clone https://github.com/CamiloCortesM/nex-stay.git
 cd nex-stay
-npm install
 ```
 
-### 2. Configuración de Base de Datos
-
-```bash
-# Iniciar contenedor PostgreSQL
-docker-compose up -d
-
-# Configurar variables de entorno (.env)
-echo "DATABASE_URL=\"postgresql://postgres:123456@localhost:5432/nexstaydb?schema=public\"" >> .env
-
-# Ejecutar migraciones y seed
-npx prisma migrate dev
-npx prisma db seed
-```
-
-### 3. Configuración AWS Cognito
+### 2. Configuración de Variables de Entorno
 
 Crear archivo .env con:
 
 ```env
-PORT=3005
+# AWS Cognito Configuration
 AWS_COGNITO_CLIENT_ID=tu_client_id
 AWS_COGNITO_USER_POOL_ID=tu_user_pool_id
 AWS_COGNITO_AUTHORITY=https://cognito-idp.region.amazonaws.com/your_user_pool_id
 
-DATABASE_URL="postgresql://postgres:123456@localhost:5432/nexstaydb?schema=public"
+# Database Configuration (Docker will use this)
+DATABASE_URL="postgresql://postgres:123456@database:5432/nexstaydb?schema=public"
 ```
 
-### 4. Iniciar Servidor
+### 3. Iniciar con Docker Compose
 
 ```bash
-npm run start:dev
+# Construir e iniciar todos los servicios
+docker-compose up --build
+
+# Para ejecutar en segundo plano
+docker-compose up -d --build
+```
+
+El sistema iniciará automáticamente:
+- Base de datos PostgreSQL
+- Aplicación NestJS en modo desarrollo (con hot-reload activado)
+- Migraciones y seed de la base de datos
+
+### 4. Acceso a la Aplicación
+
+Una vez que la aplicación esté ejecutándose, podrás acceder al entorno de Apollo Studio para interactuar con la API GraphQL:
+
+```
+http://localhost:3000/graphql
+```
+
+Este entorno te permite:
+- Explorar el esquema GraphQL
+- Ejecutar consultas y mutaciones
+- Ver la documentación de la API
+- Probar las operaciones con diferentes variables
+
+### 5. Gestión de la Base de Datos
+
+La base de datos viene pre-configurada y se carga automáticamente con datos iniciales (seed) al arrancar. Estos datos incluyen:
+
+- Tipos de habitaciones
+- Configuraciones de precios
+
+#### Reiniciar la Base de Datos
+
+Si necesitas reiniciar la base de datos con datos limpios:
+
+```bash
+# Detener todos los contenedores
+docker-compose down
+
+# Eliminar el volumen de la base de datos
+docker volume rm nex-stay_postgres_data
+
+# Reiniciar todo (reconstruirá la base de datos desde cero)
+docker-compose up --build
+```
+
+#### Ver Logs de la Aplicación
+
+```bash
+# Ver logs en tiempo real
+docker-compose logs -f nex-stay
+
+# Ver logs de la base de datos
+docker-compose logs -f database
 ```
 
 ## 🛠 Tecnologías Utilizadas (Actualizado)
@@ -169,37 +208,77 @@ npx prisma db seed
 
 ## 🐳 Configuración Docker
 
+El proyecto está completamente dockerizado para facilitar el desarrollo y despliegue. La configuración incluye:
+
+- Contenedor para la aplicación NestJS con hot-reload
+- Contenedor para la base de datos PostgreSQL
+- Volumen persistente para los datos
+- Healthcheck para la base de datos
+- Variables de entorno configuradas
+
 Archivo `docker-compose.yml`:
 
 ```yaml
 version: '3'
 
 services:
-  nexstay-db:
-    container_name: nexstay-db
+  nex-stay:
+    depends_on:
+      - database
+    build: .
+    volumes:
+      - ./src:/usr/src/app/src
+    ports:
+      - '3000:3000'
+    command: npm run start:dev
+    env_file:
+      - .env
+    environment:
+      - PORT=3000
+      - DATABASE_URL=postgresql://postgres:123456@database:5432/nexstaydb?schema=public
+      - AWS_COGNITO_USER_POOL_ID=${AWS_COGNITO_USER_POOL_ID}
+      - AWS_COGNITO_CLIENT_ID=${AWS_COGNITO_CLIENT_ID}
+      - AWS_COGNITO_AUTHORITY=${AWS_COGNITO_AUTHORITY}
+
+  database:
+    container_name: nexstay_database
     image: postgres:16.2
     restart: always
     volumes:
-      - ./postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - '5432:5432'
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123456
       - POSTGRES_DB=nexstaydb
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d nexstaydb']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
 ```
 
 Comandos útiles:
 
 ```bash
-# Iniciar base de datos
+# Iniciar todos los servicios
 docker-compose up -d
 
-# Detener contenedor
+# Detener todos los servicios
 docker-compose down
 
-# Ver logs
-docker logs nexstay-db -f
+# Reconstruir la imagen (tras cambios en package.json)
+docker-compose build
+
+# Reiniciar un servicio específico
+docker-compose restart nex-stay
+
+# Ver logs de todos los servicios
+docker-compose logs -f
 ```
 
 
