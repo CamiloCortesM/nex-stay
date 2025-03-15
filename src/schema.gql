@@ -94,12 +94,56 @@ type PaginatedReservations {
   totalFuture: Float!
 }
 
+type AvailableRoomResult {
+  room: Room!
+
+  """Number of days in the reservation"""
+  daysCount: Float!
+
+  """Number of nights in the reservation"""
+  nightsCount: Float!
+
+  """Base value applied to the reservation"""
+  baseValue: Float!
+
+  """Total weekend increment applied"""
+  weekendIncrement: Float!
+
+  """Total discount for days"""
+  daysDiscount: Float!
+
+  """Total for all inclusive"""
+  allInclusiveTotal: Float!
+
+  """Total price for the stay"""
+  totalPrice: Float!
+}
+
+type PagedAvailableRoomResult {
+  items: [AvailableRoomResult!]!
+  total: Int!
+  offset: Int!
+  limit: Int!
+  hasMore: Boolean!
+}
+
 type Query {
   hello: String!
   reservation(id: String!): Reservation!
   reservations(offset: Int = 0, limit: Int = 10): PaginatedReservations!
-  rooms: [Room!]!
-  room(id: Int!): Room!
+
+  """Get all room types"""
+  roomTypes: [String!]!
+
+  """Get available rooms based on criteria with pagination"""
+  availableRooms(checkIn: DateTime!, checkOut: DateTime!, people: Float!, roomType: RoomType, exteriorViewOnly: Boolean = false, allInclusive: Boolean = false, offset: Int = 0, limit: Int = 10): PagedAvailableRoomResult!
+}
+
+"""The available room types"""
+enum RoomType {
+  SENCILLA
+  DOBLE
+  PRESIDENCIAL
 }
 
 type Mutation {
@@ -110,9 +154,6 @@ type Mutation {
   confirmPassword(confirmPasswordInput: ConfirmPasswordInput!): StandardResponseAuth!
   createReservation(createReservationInput: CreateReservationInput!): Reservation!
   cancelReservation(id: String!): Reservation!
-  createRoom(createRoomInput: CreateRoomInput!): Room!
-  updateRoom(updateRoomInput: UpdateRoomInput!): Room!
-  removeRoom(id: Int!): Room!
 }
 
 input RegisterInput {
@@ -148,22 +189,4 @@ input CreateReservationInput {
   people: Float!
   roomType: RoomType!
   allInclusive: Boolean!
-}
-
-"""The available room types"""
-enum RoomType {
-  SENCILLA
-  DOBLE
-  PRESIDENCIAL
-}
-
-input CreateRoomInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateRoomInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
 }

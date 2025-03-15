@@ -10,6 +10,11 @@ interface PricingParams {
 
 interface PricingResult {
   totalPrice: number;
+  totalNights: number;
+  weekendSurcharge?: number;
+  discount?: number;
+  allInclusiveCost?: number;
+  basePrice?: number;
 }
 
 @Injectable()
@@ -31,6 +36,11 @@ export class PricingService {
 
     return {
       totalPrice: baseTotal + weekendSurcharge - discount + allInclusiveCost,
+      totalNights,
+      weekendSurcharge,
+      discount,
+      allInclusiveCost,
+      basePrice,
     };
   }
 

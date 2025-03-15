@@ -1,35 +1,37 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Args } from '@nestjs/graphql';
 import { RoomsService } from './rooms.service';
 import { Room } from './model/room.model';
-import { CreateRoomInput } from './dto/create-room.input';
-import { UpdateRoomInput } from './dto/update-room.input';
+import { AvailableRoomsArgs } from './dto/args/available-rooms.args';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { PagedAvailableRoomResult } from './model/paged-available-room-result.model';
+import { PaginationArgs } from '../common/dto/args/pagination.args';
 
 @Resolver(() => Room)
 export class RoomsResolver {
   constructor(private readonly roomsService: RoomsService) {}
 
-  @Mutation(() => Room)
-  createRoom(@Args('createRoomInput') createRoomInput: CreateRoomInput) {
-    return this.roomsService.create(createRoomInput);
+  @Query(() => [String], {
+    name: 'roomTypes',
+    description: 'Get all room types',
+  })
+  @UseGuards(JwtAuthGuard)
+  async getRoomTypes(): Promise<string[]> {
+    return this.roomsService.findAllRoomTypes();
   }
 
-  @Query(() => [Room], { name: 'rooms' })
-  findAll() {
-    return this.roomsService.findAll();
-  }
-
-  @Query(() => Room, { name: 'room' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.roomsService.findOne(id);
-  }
-
-  @Mutation(() => Room)
-  updateRoom(@Args('updateRoomInput') updateRoomInput: UpdateRoomInput) {
-    return this.roomsService.update(updateRoomInput.id, updateRoomInput);
-  }
-
-  @Mutation(() => Room)
-  removeRoom(@Args('id', { type: () => Int }) id: number) {
-    return this.roomsService.remove(id);
+  @Query(() => PagedAvailableRoomResult, {
+    name: 'availableRooms',
+    description: 'Get available rooms based on criteria with pagination',
+  })
+  @UseGuards(JwtAuthGuard)
+  async getAvailableRooms(
+    @Args() availableRoomsArgs: AvailableRoomsArgs,
+    @Args() paginationArgs: PaginationArgs,
+  ): Promise<PagedAvailableRoomResult> {
+    return this.roomsService.findAvailableRoomsPaginated(
+      availableRoomsArgs,
+      paginationArgs,
+    );
   }
 }
