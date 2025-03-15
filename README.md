@@ -1,98 +1,205 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Nex-Stay - Hotel Management System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+![NestJS](https://img.shields.io/badge/nestjs-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
+![GraphQL](https://img.shields.io/badge/-GraphQL-E10098?style=for-the-badge&logo=graphql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Descripción del Proyecto
 
-## Description
+Sistema de gestión hotelera con las siguientes características principales:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Autenticación Segura**: Integración con AWS Cognito
+- **Gestión de Reservas**: Cálculos automáticos de precios y disponibilidad
+- **Búsqueda Avanzada**: Filtrado de habitaciones con paginación
+- **Arquitectura Moderna**: GraphQL API con NestJS y Prisma ORM
+- **Despliegue Simplificado**: Configuración Docker para base de datos
 
-## Project setup
+### Check-in y Check-out
 
-```bash
-$ npm install
-```
+El check-in suele realizarse en la tarde, generalmente después de las 4:00 p.m. y cuenta como una sola noche (no dia). El check-out suele realizarse antes de las 12:00 p.m. por lo que no se cobra una noche adicional.
 
-## Compile and run the project
+## 🚀 Instrucciones de Ejecución
+
+### Prerrequisitos
+
+- Node.js v18+
+- npm v9+
+- Docker y Docker Compose
+- Cuenta AWS con Cognito configurado
+
+### 1. Configuración Inicial
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/CamiloCortesM/nex-stay.git
+cd nex-stay
+npm install
 ```
 
-## Run tests
+### 2. Configuración de Base de Datos
 
 ```bash
-# unit tests
-$ npm run test
+# Iniciar contenedor PostgreSQL
+docker-compose up -d
 
-# e2e tests
-$ npm run test:e2e
+# Configurar variables de entorno (.env)
+echo "DATABASE_URL=\"postgresql://postgres:123456@localhost:5432/nexstaydb?schema=public\"" >> .env
 
-# test coverage
-$ npm run test:cov
+# Ejecutar migraciones y seed
+npx prisma migrate dev
+npx prisma db seed
 ```
 
-## Deployment
+### 3. Configuración AWS Cognito
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Crear archivo .env con:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```env
+PORT=3005
+AWS_COGNITO_CLIENT_ID=tu_client_id
+AWS_COGNITO_USER_POOL_ID=tu_user_pool_id
+AWS_COGNITO_AUTHORITY=https://cognito-idp.region.amazonaws.com/your_user_pool_id
+
+DATABASE_URL="postgresql://postgres:123456@localhost:5432/nexstaydb?schema=public"
+```
+
+### 4. Iniciar Servidor
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 🛠 Tecnologías Utilizadas (Actualizado)
 
-## Resources
+### Backend Core
 
-Check out a few resources that may come in handy when working with NestJS:
+- **NestJS v11**: Framework principal con arquitectura modular
+- **GraphQL v16**: Implementación con Apollo Server 4
+- **Prisma v6.5**: ORM moderno con type-safety
+- **AWS Cognito**: Autenticación empresarial
+- **PostgreSQL v16**: Base de datos relacional
+- **RxJS v7**: Programación reactiva
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Seguridad
 
-## Support
+- **JWT v9**: Tokens de autenticación
+- **Passport v0.7**: Estrategias de autenticación
+  - **passport-jwt**: Autenticación por tokens
+  - **passport-local**: Autenticación tradicional
+- **jwks-rsa**: Validación de cles RSA para Cognito
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Desarrollo y Testing
 
-## Stay in touch
+- **TypeScript v5.7**: Tipado estático avanzado
+- **Jest v29**: Suite de pruebas con cobertura
+- **SWC**: Compilador ultra-rápido
+- **ts-node**: Ejecución directa de TypeScript
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Herramientas de Calidad
 
-## License
+- **ESLint v9 + Prettier v3**: Linter y formateador
+- **Class-Validator**: Validación de DTOs
+- **Joi v17**: Validación de variables de entorno
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Infraestructura
+
+- **Docker**: Contenerización de servicios
+- **tsconfig-paths**: Resolución de paths absolutos
+- **source-map-support**: Depuración en producción
+
+### Paquetes Clave
+
+- **Apollo Server 4**: Servidor GraphQL de última generación
+- **NestJS GraphQL**: Integración GraphQL con NestJS
+- **Amazon Cognito SDK**: SDK oficial para integración
+- **Prisma Client**: Generación automática de queries
+- **Class Transformer**: Serialización de objetos
+
+### Workflow
+
+- **Nest CLI**: Generación de recursos
+- **Prisma CLI**: Manejo de migraciones
+- **SWC Core**: Compilación optimizada
+
+## 🌱 Seed de Prisma
+
+### Datos Iniciales
+
+El archivo `prisma/seed.ts` incluye:
+
+- 3 tipos de habitaciones
+- Precios base iniciales
+- Maxima Capacidad
+- Si es de vista Exterior o Interior
+
+### Ejecutar Seed Manualmente
+
+```bash
+npx prisma db seed
+```
+
+## 📚 Documentación de la API
+
+### Autenticación 🔐
+
+| Operación         | Tipo     | Descripción                    | Parámetros                           |
+| ----------------- | -------- | ------------------------------ | ------------------------------------ |
+| `signup`          | Mutation | Registro de usuario            | email, password, name                |
+| `login`           | Mutation | Inicio de sesión (retorna JWT) | email, password                      |
+| `changePassword`  | Mutation | Cambiar contraseña             | currentPassword, email, newPassword  |
+| `forgotPassword`  | Mutation | Recuperación de contraseña     | email                                |
+| `confirmPassword` | Mutation | Confirmar nueva contraseña     | confirmationCode, newPassword, email |
+
+### Reservas 🛎
+
+| Operación           | Tipo     | Descripción                  | Parámetros                                      |
+| ------------------- | -------- | ---------------------------- | ----------------------------------------------- |
+| `createReservation` | Mutation | Crear reserva                | checkIn, checkOut, people,roomType,allInclusive |
+| `cancelReservation` | Mutation | Cancelar reserva             | reservationId                                   |
+| `reservation`       | Query    | Obtener reserva por ID       | reservationId                                   |
+| `reservations`      | Query    | Listado paginado de reservas | limit, offset                                   |
+
+### Habitaciones 🏨
+
+| Operación        | Tipo  | Descripción                          | Parámetros                                                                         |
+| ---------------- | ----- | ------------------------------------ | ---------------------------------------------------------------------------------- |
+| `roomTypes`      | Query | Lista tipos de habitación            | -                                                                                  |
+| `availableRooms` | Query | Búsqueda de habitaciones disponibles | checkIn, checkOut, people, roomType, exteriorViewOnly, allInclusive, limit, offset |
+
+## 🐳 Configuración Docker
+
+Archivo `docker-compose.yml`:
+
+```yaml
+version: '3'
+
+services:
+  nexstay-db:
+    container_name: nexstay-db
+    image: postgres:16.2
+    restart: always
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=nexstaydb
+```
+
+Comandos útiles:
+
+```bash
+# Iniciar base de datos
+docker-compose up -d
+
+# Detener contenedor
+docker-compose down
+
+# Ver logs
+docker logs nexstay-db -f
+```
+
+

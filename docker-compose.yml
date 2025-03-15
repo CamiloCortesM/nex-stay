@@ -1,15 +1,41 @@
 version: '3'
 
 services:
-  nexstay-db:
-    container_name: nexstay-db
+  nex-stay:
+    depends_on:
+      - database
+    build: .
+    volumes:
+      - ./src:/usr/src/app/src
+    ports:
+      - '3000:3000'
+    command: npm run start:dev
+    env_file:
+      - .env
+    environment:
+      - PORT=3000
+      - DATABASE_URL=postgresql://postgres:123456@database:5432/nexstaydb?schema=public
+      - AWS_COGNITO_USER_POOL_ID=${AWS_COGNITO_USER_POOL_ID}
+      - AWS_COGNITO_CLIENT_ID=${AWS_COGNITO_CLIENT_ID}
+      - AWS_COGNITO_AUTHORITY=${AWS_COGNITO_AUTHORITY}
+
+  database:
+    container_name: nexstay_database
     image: postgres:16.2
     restart: always
     volumes:
-      - ./postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - '5432:5432'
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123456
       - POSTGRES_DB=nexstaydb
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d nexstaydb']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:

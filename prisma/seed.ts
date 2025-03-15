@@ -3,6 +3,14 @@ import { PrismaClient, RoomType, RoomView } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  // Check if there is existing data in the Room table
+  const roomCount = await prisma.room.count();
+
+  if (roomCount > 0) {
+    console.log('⏭️ Rooms data already exists, skipping seed');
+    return;
+  }
+
   await prisma.room.createMany({
     data: [
       // Single Rooms
