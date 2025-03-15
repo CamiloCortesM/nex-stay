@@ -6,7 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReservationInput } from './dto/inputs/create-reservation.input';
 import { Reservation } from './models/reservation.model';
-import { PaginationArgs } from 'src/common/dto/args/pagination.args';
+import { PaginationArgs } from '../common/dto/args/pagination.args';
 import { PaginatedReservations } from './types/paginated-reservations.type';
 import { PricingService } from './pricing.service';
 
@@ -82,7 +82,11 @@ export class ReservationsService {
     return this.prisma.room.findFirst({
       where: {
         type: input.roomType,
-        id: { notIn: conflictingReservations.map((r) => r.roomId) },
+        id: {
+          notIn: conflictingReservations
+            ? conflictingReservations.map((r) => r.roomId)
+            : [],
+        },
         maxCapacity: { gte: input.people },
       },
     });

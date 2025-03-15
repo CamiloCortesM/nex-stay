@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { Room } from 'src/rooms/models/room.model';
+import { Room } from '../../rooms/models/room.model';
 
 @ObjectType()
 export class Reservation {

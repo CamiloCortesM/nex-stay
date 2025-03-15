@@ -6,14 +6,14 @@ import {
   Parent,
   Query,
 } from '@nestjs/graphql';
+import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 
 import { CreateReservationInput } from './dto/inputs/create-reservation.input';
-import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { User } from 'src/auth/interfaces/user.interface';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import { User } from '../auth/interfaces/user.interface';
 import { Reservation } from './models/reservation.model';
-import { PaginationArgs } from 'src/common/dto/args/pagination.args';
+import { PaginationArgs } from '../common/dto/args/pagination.args';
 import { PaginatedReservations } from './types/paginated-reservations.type';
 import { ReservationsService } from './reservations.service';
 
