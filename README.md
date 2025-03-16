@@ -126,7 +126,7 @@ npm run test:cov
 npm run test:watch
 ```
 
-## 🛠 Tecnologías Utilizadas (Actualizado)
+## 🛠 Tecnologías Utilizadas
 
 ### Backend Core
 
