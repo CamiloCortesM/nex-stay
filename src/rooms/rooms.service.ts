@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PricingService } from '../reservations/pricing.service';
 import { AvailableRoomsArgs } from './dto/args/available-rooms.args';
@@ -26,6 +26,10 @@ export class RoomsService {
     args: AvailableRoomsArgs,
     paginationArgs: PaginationArgs,
   ): Promise<PagedAvailableRoomResult> {
+    if (args.checkIn >= args.checkOut) {
+      throw new ConflictException('Check-out date must be after check-in date');
+    }
+
     const { offset = 0, limit = 10 } = paginationArgs;
     const {
       checkIn,

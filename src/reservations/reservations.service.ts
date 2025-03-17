@@ -21,6 +21,10 @@ export class ReservationsService {
     userId: string,
     input: CreateReservationInput,
   ): Promise<Reservation> {
+    if (input.checkIn >= input.checkOut) {
+      throw new ConflictException('Check-out date must be after check-in date');
+    }
+
     // 1. Validate room availability
     const availableRoom = await this.findAvailableRoom(input);
 
